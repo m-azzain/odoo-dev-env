@@ -2,7 +2,7 @@
 It is a repository to create development enviroment for odoo using docker compose. It has been inspired by odoo docker image [odoo docker](https://github.com/odoo/docker)
 
 
-**What You need this image for?**
+**What You need it for?**
 
 - If you are [docker compose](https://docs.docker.com/compose/) enthusiast and want to do development with odoo.
 - Or you may face difficulties in setting up your development enviroment, so you may resort to use docker.
@@ -26,6 +26,6 @@ It is a repository to create development enviroment for odoo using docker compos
     cd odoo-dev-env
     cp ./.dockerignore ../
     ```
-- run `sudo docker compose up`, if you'r on windows jus run `docker compose up`. 
+- run `sudo docker compose up`, if you'r on windows jus run `docker compose up` 
 - If every thing went well you can access the running server on `localhost:8069`
 - For more docker compose commands you can visit their site [docker compose docs](https://docs.docker.com/compose/).
