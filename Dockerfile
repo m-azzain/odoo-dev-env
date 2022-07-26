@@ -1,73 +1,61 @@
-FROM python:3.8.10-slim
+ARG PGHOST
+ARG PGDATABASE
+ARG DATABASE_URL
+ARG PGUSER
+ARG PGPORT
+ARG PGPASSWORD
+
+ARG PORT
+
+# FROM python:3.8.10-slim
+FROM moh3azzain/odoo-dev-env:test
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
 # Generate locale C.UTF-8 for postgres and general locale data
 ENV LANG C.UTF-8
 
-# Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
-RUN apt-get update --allow-releaseinfo-change -y && \
-    apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
-        dirmngr \
-        fonts-noto-cjk \
-        gnupg \
-        libssl-dev \
-        node-less \
-        npm \
-        python3-num2words \
-        python3-pdfminer \
-        python3-pip \
-        python3-phonenumbers \
-        python3-pyldap \
-        python3-qrcode \
-        python3-renderpm \
-        python3-setuptools \
-        python3-slugify \
-        python3-vobject \
-        python3-watchdog \
-        python3-xlrd \
-        python3-xlwt \
-        xz-utils \
-        sudo \
-        dos2unix \
-    && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
-    && echo 'ea8277df4297afc507c61122f3c349af142f31e5 wkhtmltox.deb' | sha1sum -c - \
-    && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
-    && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
+ENV HOST=$PGHOST
+ENV USER=$PGUSER
+ENV PASSWORD=$PGPASSWORD
+ENV DATABASE=$PGDATABASE
+ENV DBPORT=$PGPORT
 
-# install latest postgresql-client
-# RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ bullseye-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
-#     && GNUPGHOME="$(mktemp -d)" \
-#     && export GNUPGHOME \
-#     && repokey='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8' \
-#     && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "${repokey}" \
-#     && gpg --batch --armor --export "${repokey}" > /etc/apt/trusted.gpg.d/pgdg.gpg.asc \
-#     && gpgconf --kill all \
-#     && rm -rf "$GNUPGHOME" \
-#     && apt-get update --allow-releaseinfo-change -y \
-#     && apt-get install --no-install-recommends -y postgresql-client \
-#     && rm -f /etc/apt/sources.list.d/pgdg.list \
-#     && rm -rf /var/lib/apt/lists/*
+ENV HTTPPORT=$PORT
 
-# Install rtlcss (on Debian buster)
-RUN npm install -g rtlcss
+# Copy Odoo configuration file
+COPY ./odoo-dev-env/odoo.conf /etc/odoo/
 
-# Install some deps, from the odoo docs
-RUN apt-get update --allow-releaseinfo-change -y && \
-    apt-get install -y --no-install-recommends \
-    python3-dev libxml2-dev libxslt1-dev libldap2-dev libsasl2-dev \
-    libtiff5-dev \
-#     libjpeg8-dev \ has an issue: https://github.com/Automattic/node-canvas/issues/524
-    libjpeg62-turbo \
-    libopenjp2-7-dev zlib1g-dev libfreetype6-dev \
-    liblcms2-dev libwebp-dev libharfbuzz-dev libfribidi-dev libxcb1-dev libpq-dev \
-    build-essential
+RUN useradd -rm -d /home/odoo -s /bin/bash -G sudo odoo
 
-# Copy the requirements.txt
-COPY . /
-RUN pip3 install setuptools wheel
-RUN pip3 install -r requirements.txt
+RUN chown odoo /etc/odoo/odoo.conf && mkdir -p /var/lib/odoo && chown odoo /var/lib/odoo
 
-CMD ["python3"]
+# Set default user when running the container
+USER odoo
+
+WORKDIR /home/odoo/app
+
+# Copy odoo source code 
+# This will actually be overriden by the mount in the docker compose
+# COPY ./odoo/ /home/odoo/app 
+
+COPY ./odoo-dev-env/wait-for-psql.py /usr/local/bin/wait-for-psql.py
+# Copy the entrypoint file
+COPY ./odoo-dev-env/entrypoint.sh /home/odoo
+
+
+
+VOLUME ["/var/lib/odoo"]
+
+# Expose Odoo services
+# EXPOSE 8069 8071 8072
+EXPOSE ${HTTPPORT:-8069}
+
+# Set the default config file
+ENV ODOO_RC /etc/odoo/odoo.conf
+
+
+
+ENTRYPOINT ["/home/odoo/entrypoint.sh"]
+CMD ["odoo"]
+

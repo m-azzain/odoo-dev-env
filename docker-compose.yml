@@ -1,0 +1,26 @@
+version: "3.3"  # optional since v1.27.0
+services:
+  web:
+    build: 
+      context: ..
+      dockerfile: ./odoo-dev-env/Dockerfile
+    ports:
+      - "8069:8069"
+    depends_on:
+      - db
+    volumes:
+      - ../odoo:/home/odoo/app
+      - odoo-data:/var/lib/odoo
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+volumes:
+  odoo-data: {}
+  odoo-db-data: {}

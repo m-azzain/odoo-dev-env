@@ -1,0 +1,54 @@
+**/.git
+
+
+# sphinx build directories
+odoo/_build/
+
+# dotfiles
+odoo/.*
+!odoo/.gitignore
+!odoo/.dockerignore
+!odoo/.github
+!odoo/.mailmap
+
+# compiled python files
+odoo/*.py[co]
+odoo/__pycache__/
+# setup.py egg_info
+odoo/*.egg-info
+# emacs backup files
+odoo/*~
+# hg stuff
+odoo/*.orig
+odoo/status
+# odoo filestore
+odoo/odoo/filestore
+# maintenance migration scripts
+odoo/odoo/addons/base/maintenance
+
+# generated for windows installer?
+odoo/install/win32/*.bat
+odoo/install/win32/meta.py
+
+# needed only when building for win32
+odoo/setup/win32/static/less/
+odoo/setup/win32/static/wkhtmltopdf/
+odoo/setup/win32/static/postgresql*.exe
+
+# js tooling
+odoo/node_modules
+odoo/package-lock.json
+odoo/package.json
+
+# various virtualenv
+odoo/bin/
+odoo/build/
+odoo/dist/
+odoo/include/
+odoo/lib/
+odoo/man/
+odoo/share/
+odoo/src/
+
+# avoid adding it after generation from tsconfig command
+odoo/tsconfig.json
