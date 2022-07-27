@@ -44,8 +44,8 @@ COPY ./odoo-dev-env/wait-for-psql.py /usr/local/bin/wait-for-psql.py
 COPY ./odoo-dev-env/entrypoint.sh /home/odoo
 
 
-
-VOLUME ["/var/lib/odoo"]
+# This volume has been moved into docker-compose.yml
+# VOLUME ["/var/lib/odoo"]
 
 # Expose Odoo services
 # EXPOSE 8069 8071 8072
