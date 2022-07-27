@@ -8,8 +8,9 @@ It is a repository to create development enviroment for odoo using docker compos
 - Or you may face difficulties in setting up your development enviroment, so you may resort to use docker.
 
 
-**How to use it**
-*These instructions assuming that you are using linux machine*
+**How to use it?**
+
+**These instructions assuming that you are using linux machine**
 
 - [Install docker compose](https://docs.docker.com/compose/install/) into your machine.
 - make a common directory to include this repo and [odoo](https://github.com/odoo/odoo.git), let us call it common.
