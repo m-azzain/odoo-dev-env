@@ -30,8 +30,6 @@ RUN useradd -rm -d /home/odoo -s /bin/bash -G sudo odoo
 
 RUN chown odoo /etc/odoo/odoo.conf && mkdir -p /var/lib/odoo && chown odoo /var/lib/odoo
 
-# Set default user when running the container
-USER odoo
 
 WORKDIR /home/odoo/app
 
@@ -40,9 +38,13 @@ WORKDIR /home/odoo/app
 # COPY ./odoo/ /home/odoo/app 
 
 COPY ./odoo-dev-env/wait-for-psql.py /usr/local/bin/wait-for-psql.py
+RUN dos2unix /usr/local/bin/wait-for-psql.py
 # Copy the entrypoint file
 COPY ./odoo-dev-env/entrypoint.sh /home/odoo
+RUN dos2unix /home/odoo/entrypoint.sh
 
+# Set default user when running the container
+USER odoo
 
 # This volume has been moved into docker-compose.yml
 # VOLUME ["/var/lib/odoo"]
